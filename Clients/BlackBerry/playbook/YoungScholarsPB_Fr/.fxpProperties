@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<fxpProperties abbreviated="false" authoringTool="Flex Builder" compiles="true" parentProject="9c1cfc7f-e6c4-48dd-9ed1-c48d592fa1f8" projectUUID="9c1cfc7f-e6c4-48dd-9ed1-c48d592fa1f8" sdkVersion="4.5.0" uuid="49d0280e-c1b8-4e6b-b445-8a9f8512b1ad" version="9">
+  <projects/>
+  <src/>
+  <swc>
+    <linked location="sdkPlaceHolder" path="sdkPlaceHolder" position="0" uuid="49d0280e-c1b8-4e6b-b445-8a9f8512b1ad"/>
+    <linked location="/libs" path="\libs" position="1" uuid="49d0280e-c1b8-4e6b-b445-8a9f8512b1ad"/>
+    <linked location="/Applications/Adobe Flash Builder Burrito/sdks/blackberry-tablet-sdk-0.9.2/frameworks/libs/blackberry/blackberry.swc" path="\linked-swc\blackberry.swc" position="2" uuid="49d0280e-c1b8-4e6b-b445-8a9f8512b1ad"/>
+  </swc>
+  <misc/>
+  <theme/>
+  <mxmlFormattingPrefs groupAttributesByState="true" maxLineWidth="100" mxmlAlignAttributes="true" mxmlAttributeOrder="id,userLabel,includeIn,excludeFrom,visible,x,y,z,left,right,top,bottom,width,height,minWidth,minHeight,maxWidth,maxHeight,label" mxmlKeepAttributeValuesOrganized="true"/>
+</fxpProperties>

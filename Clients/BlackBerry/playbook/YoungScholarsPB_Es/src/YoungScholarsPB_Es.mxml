@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<r:QApplication 
+	xmlns:fx="http://ns.adobe.com/mxml/2009"
+	xmlns:r="http://ns.renaun.com/mxml/2010" 
+	complete="completeHandler()"
+	>
+	<fx:Script>
+		<![CDATA[
+			import com.aVictorio.youngScholars.model.ApplicationModel;
+			import com.aVictorio.youngScholars.model.GameModel;
+			import com.aVictorio.youngScholars.views.homeView.tablet.MainAppView_tablet;
+			import com.dpLightFramework.framework.control.GenericEvent;
+			import com.dpLightFramework.framework.control.GenericEventProxy;
+			
+			import mx.resources.ResourceManager;
+			
+			protected function completeHandler():void
+			{
+				GenericEventProxy.getInstance().dispatchEvent(new GenericEvent("SetInitialLocale", "es_ES", true, true));
+			}
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<r:QViewNavigator
+			application="{this}" firstView="{MainAppView_tablet}" 
+			/>
+	</fx:Declarations>
+</r:QApplication>

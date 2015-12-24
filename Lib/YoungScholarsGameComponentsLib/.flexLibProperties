@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.aVictorio.youngScholars.model.ApplicationModel"/>
+    <classEntry path="com.aVictorio.youngScholars.views.games.matching.phone.MatchingGameBoardView_phone"/>
+    <classEntry path="com.aVictorio.youngScholars.views.games.matching.renderers.FlashCardButton"/>
+    <classEntry path="com.aVictorio.youngScholars.views.games.matching.renderers.MemoryCardSkinRenderer"/>
+    <classEntry path="com.aVictorio.youngScholars.views.games.quiz.MathQuizBoard"/>
+    <classEntry path="com.aVictorio.youngScholars.views.games.quiz.MathQuizBoardContainer"/>
+    <classEntry path="com.aVictorio.youngScholars.views.homeView.gameSelection.GameSelectionArea"/>
+    <classEntry path="com.aVictorio.youngScholars.views.homeView.gameSelection.LabelIconButton"/>
+    <classEntry path="com.aVictorio.youngScholars.views.homeView.phone.MainAppView_phone"/>
+    <classEntry path="com.aVictorio.youngScholars.views.homeView.tablet.MainAppView_tablet"/>
+    <classEntry path="com.aVictorio.youngScholars.views.homeView.toolbar.ToolbarView"/>
+  </includeClasses>
+  <includeResources>
+    <resourceEntry destPath="assets/images/math_96x96.png" sourcePath="assets/images/math_96x96.png"/>
+    <resourceEntry destPath="assets/images/youngScholarsLogo.png" sourcePath="assets/images/youngScholarsLogo.png"/>
+    <resourceEntry destPath="assets/images/check_32x32.png" sourcePath="assets/images/check_32x32.png"/>
+    <resourceEntry destPath="assets/images/logo/YoungScholars_480x480_tree.png" sourcePath="assets/images/logo/YoungScholars_480x480_tree.png"/>
+    <resourceEntry destPath="assets/images/logo/youngScholars_72x72_transparent.png" sourcePath="assets/images/logo/youngScholars_72x72_transparent.png"/>
+    <resourceEntry destPath="assets/images/logo/youngScholars_72x72.png" sourcePath="assets/images/logo/youngScholars_72x72.png"/>
+    <resourceEntry destPath="assets/images/refresh_72x72.png" sourcePath="assets/images/refresh_72x72.png"/>
+    <resourceEntry destPath="assets/images/next_72x72.png" sourcePath="assets/images/next_72x72.png"/>
+    <resourceEntry destPath="assets/images/myhome_72x72.png" sourcePath="assets/images/myhome_72x72.png"/>
+    <resourceEntry destPath="assets/images/logo/youngScholars_60x60_sharp.png" sourcePath="assets/images/logo/youngScholars_60x60_sharp.png"/>
+    <resourceEntry destPath="assets/images/cross_32x32.png" sourcePath="assets/images/cross_32x32.png"/>
+    <resourceEntry destPath="assets/images/logo/youngScholars_60x60.png" sourcePath="assets/images/logo/youngScholars_60x60.png"/>
+    <resourceEntry destPath="assets/images/logo/youngScholars_72x72mono.png" sourcePath="assets/images/logo/youngScholars_72x72mono.png"/>
+  </includeResources>
+  <namespaceManifests/>
+</flexLibProperties>

@@ -1,0 +1,12 @@
+<qnx>
+  <initialWindow>
+    <systemChrome>none</systemChrome>
+    <transparent>false</transparent>
+  </initialWindow>
+  <publisher>Bing Victorio</publisher>
+  <category>core.games</category>
+  <icon>
+   <image>blackberry-tablet-icon_tree.png</image>
+  </icon>
+  <splashscreen>youngScholars_splash.png</splashscreen>
+</qnx>

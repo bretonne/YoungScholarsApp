@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<matching:MatchingGameBoard 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:matching="com.aVictorio.youngScholars.views.games.matching.*"
+	complete="completeHandler(event)" 
+	xmlns:listClasses="qnx.ui.listClasses.*"
+	>
+	<fx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			
+			import com.aVictorio.youngScholars.managers.StylingFactory;
+			import com.aVictorio.youngScholars.model.ApplicationModel;
+			import com.aVictorio.youngScholars.model.GameModel;
+			import com.aVictorio.youngScholars.views.games.matching.renderers.FlashCardButton;
+			import com.renaun.qnx.ui.text.Label;
+			
+			import qnx.ui.core.Containment;
+			import qnx.ui.events.ListEvent;
+			import qnx.ui.listClasses.ListSelectionMode;
+			
+			
+			override protected function onAdded():void
+			{
+				gameOverLabel = new Label();
+				gameOverLabel.setSize(350, 50);
+				gameOverLabel.format = StylingFactory.getTextFormat(32, "0xff0000", true, true);
+				gameOverLabel.alpha = 0;
+				addChild(gameOverLabel);
+				
+				setChildIndex(gameOverLabel, 0);
+			}
+
+			override protected function completeHandler(event:Event):void
+			{
+				gameOverLabel.setPosition(this.width/2 - 100, this.height-80);
+
+				cardBoard.setSkin(FlashCardButton);  
+				cardBoard.addEventListener(ListEvent.ITEM_CLICKED, cardBoard_clickHandler, false, 0, true);  
+				super.completeHandler(event);
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<listClasses:TileList id="cardBoard" 
+						  containment="{Containment.BACKGROUND}"
+						  cellPadding="10"
+						  columnCount="{ApplicationModel.cardBoardrows}" 
+						  rowCount="{ApplicationModel.cardBoardrows}"
+						  rowHeight="{ApplicationModel.cardBoardRowheight}" 
+						  columnWidth="{ApplicationModel.cardBoardColumnwidth}"
+						  scrollable="false"
+						  allowDeselect="true"
+						  dataProvider="{this.cards}"
+						  />	
+</matching:MatchingGameBoard>

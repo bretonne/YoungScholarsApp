@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:View xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark" 
+		actionBarVisible="false" 	
+		xmlns:phone="com.aVictorio.youngScholars.views.homeView.phone.*"
+		>
+	<fx:Script>
+		<![CDATA[
+			import com.aVictorio.youngScholars.model.GameModel;
+			import com.aVictorio.youngScholars.views.games.matching.phone.MatchingGameBoardView_phone;
+			import com.dpLightFramework.framework.control.GenericEvent;
+			
+			import mx.events.FlexEvent;
+			
+			
+			protected function handleGameSelected(event:GenericEvent):void
+			{
+				var index:int = event.data as int;
+				this.navigator.pushView(GameBoardView_phone, index);
+			}	
+		]]>
+	</fx:Script>
+	<phone:MainAppView_phone id="gameMain" 
+							 gameSelected="handleGameSelected(event)"
+							 />
+</s:View>

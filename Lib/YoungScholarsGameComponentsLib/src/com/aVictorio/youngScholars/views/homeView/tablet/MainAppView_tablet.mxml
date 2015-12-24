@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8"?>
+<r:QContainer 
+	xmlns:r="http://ns.renaun.com/mxml/2010" 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:matching="com.aVictorio.youngScholars.views.games.matching.*" 
+	 xmlns:homeView="com.aVictorio.youngScholars.views.homeView.*"
+	 xmlns:text="qnx.ui.text.*"
+	 xmlns:buttons="qnx.ui.buttons.*"
+	 flow="{ContainerFlow.VERTICAL}"
+	 containment="{Containment.CONTAINED}"
+	 complete="completeHandler(event)" 
+	 xmlns:listClasses="qnx.ui.listClasses.*" xmlns:core="qnx.ui.core.*" 
+	 xmlns:gameSelection="com.aVictorio.youngScholars.views.homeView.gameSelection.*" 
+	 xmlns:phone="com.aVictorio.youngScholars.views.games.matching.phone.*" 
+	 xmlns:toolbar="com.aVictorio.youngScholars.views.homeView.toolbar.*" 
+	 xmlns:components="com.aVictorio.youngScholars.views.components.*"
+		 >
+	<fx:Metadata>
+		[ResourceBundle("resource")]
+	</fx:Metadata>
+
+	<fx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			
+			import com.aVictorio.youngScholars.managers.IconManager;
+			import com.aVictorio.youngScholars.managers.StylingFactory;
+			import com.aVictorio.youngScholars.model.ApplicationModel;
+			import com.aVictorio.youngScholars.model.GameModel;
+			import com.aVictorio.youngScholars.model.MainMenuModel;
+			import com.aVictorio.youngScholars.model.MatchingCardFactory;
+			import com.aVictorio.youngScholars.views.games.matching.phone.MatchingGameBoardView_phone;
+			import com.aVictorio.youngScholars.views.games.quiz.MathQuizBoardContainer;
+			import com.aVictorio.youngScholars.views.homeView.gameSelection.GameSelectionArea;
+			import com.aVictorio.youngScholars.views.homeView.gameSelection.LabelIconButton;
+			import com.aVictorio.youngScholars.vos.GameDescriptor;
+			import com.dpLightFramework.framework.control.GenericEvent;
+			import com.renaun.qnx.ui.text.Label;
+			
+			import mx.resources.ResourceManager;
+			
+			import qnx.ui.buttons.IconButton;
+			import qnx.ui.core.ContainerFlow;
+			import qnx.ui.core.Containment;
+			import qnx.ui.core.SizeMode;
+			import qnx.ui.core.SizeUnit;
+			import qnx.ui.data.DataProvider;
+			import qnx.ui.events.ListEvent;
+			import qnx.ui.listClasses.ListSelectionMode;
+			
+			protected var menuModel:MainMenuModel = MainMenuModel.getInstnce();
+			protected var gameModel:GameModel = GameModel.instance;
+			
+			protected var nextCardBoard:MatchingGameBoardContainer;
+			
+			protected var mathBoard:MathQuizBoardContainer;
+
+			protected var gameSelectionList:GameSelectionArea;
+			
+			protected var btnNext:IconButton;
+			protected var btnReplay:IconButton;
+			
+			[Bindable]
+			protected var gameSelected:int;
+			
+			protected var buttonSize:int = ApplicationModel.NavigationButtonSize;
+			
+			protected var boardX:int;
+			protected var boardy:int;
+			protected var boardOnShow:Object;
+			protected var zOrderIndex:int=0;
+			
+			[Bindable]
+			public var bShowSLList:Boolean = false;
+			
+			protected function completeHandler(event:Event):void
+			{
+				btnNext.addEventListener(MouseEvent.CLICK, onNext, false, 0, true);
+				btnReplay.addEventListener(MouseEvent.CLICK, onReplay, false, 0, true);
+
+				//send these buttons to zorder back so the language selection list will not be covered.
+				this.setChildIndex(btnNext, 1);
+				this.setChildIndex(btnReplay, 2);
+				this.setChildIndex(cardBoard,3);
+				zOrderIndex=4;
+					
+				boardOnShow = cardBoard;
+				gameSelectionList.setSelected(0);
+				switchGame(0);
+			}
+			
+			override protected function onAdded():void
+			{
+				addNavigationButtons();
+
+				gameSelectionList = new GameSelectionArea(GameSelectionArea.VERTICALBAR, "0xFFF54C");
+				gameSelectionList.setSize(GameSelectionArea.MenuButtonWidth, this.height - 2*ApplicationModel.TitleBarHeight);
+
+				gameSelectionList.addEventListener("gameSelected", handleGameSelected, false, 0, true);
+				addChild(gameSelectionList);
+			}
+			
+			public function onReplay(event:Event=null):void
+			{
+				if (gameModel.currentGameSetIndex != GameModel.MathQuizs)
+				{
+					loadGameToBufferBoard(gameModel.currentGame);
+				}
+				else
+				{
+					if (boardOnShow == mathBoard)
+					{
+						mathBoard.currentGame = gameModel.currentGame;
+						mathBoard.replayGame();
+					}
+				}
+			}
+			
+			public function onNext(event:Event=null):void
+			{
+				gameModel.currentGameIndex++;
+				var nextGame:GameDescriptor = gameModel.currentGame;
+				if (gameModel.currentGameSetIndex != GameModel.MathQuizs)
+				{
+					loadGameToBufferBoard(nextGame);
+				}
+				else
+				{
+					if (boardOnShow == mathBoard)
+					{
+						mathBoard.playGame(nextGame);
+					}
+				}
+				
+				toolBar.setSelectedTitle(nextGame.gameIndex);
+			}
+			
+			protected function loadGameToBufferBoard(game:GameDescriptor):void
+			{
+				if (nextCardBoard==null)
+				{
+					nextCardBoard = new MatchingGameBoardContainer();
+					nextCardBoard.setSize(cardBoard.width, cardBoard.height);
+					addChild(nextCardBoard);
+					setChildIndex(nextCardBoard, zOrderIndex++);
+				}
+
+				nextCardBoard.gameSetIndex = gameModel.currentGameSetIndex;
+				nextCardBoard.currentGame = game;
+				nextCardBoard.playGame(game);
+				
+				var tempBoard:MatchingGameBoardContainer = cardBoard;
+				var xOrig:int = boardX;
+				var yOrig:int = boardy;
+				
+				cardBoard = nextCardBoard;
+				nextCardBoard = tempBoard;
+				
+				boardOnShow = cardBoard;
+
+				//push new cardBoard to view and hide old cardboard to be a buffer cardboard
+				Tweener.addTween(nextCardBoard, {x:this.width, y:yOrig, time:0.6, transition:"easeOutCubic", onComplete:handleBufferCardBoardMoveOut});
+
+				Tweener.addTween(cardBoard, {x:xOrig, y:yOrig, time:0.6, delay:0.2, transition:"linear"});
+			}
+			
+			private function handleBufferCardBoardMoveOut():void
+			{
+				nextCardBoard.setPosition(boardX, -nextCardBoard.height);
+			}
+			
+			private function addNavigationButtons():void
+			{
+				btnNext = new IconButton();
+				btnReplay = new IconButton();
+				
+				btnNext.setIcon(new IconManager.NextIcon());
+				btnNext.setSize(buttonSize,buttonSize);
+				
+				btnReplay.setIcon(new IconManager.RefreshIcon());
+				btnReplay.setSize(buttonSize,buttonSize);
+				
+				addChild(btnNext);
+				addChild(btnReplay);
+			}
+			
+			protected function handleGameSelected(event:GenericEvent):void
+			{
+				gameSelectionList.setSelected(event.data as int);
+				switchGame(event.data as int);
+			}
+			
+			protected function switchGame(index:int):void
+			{
+				if (gameModel.currentGameSetIndex == index)
+					return;
+				
+				if (gameModel.currentGameSetIndex ==GameModel.MathQuizs ||
+					index == GameModel.MathQuizs)
+				{
+					var toMathBoard:Boolean = false;
+					if (index == GameModel.MathQuizs)
+						toMathBoard = true;
+					
+					SwitchMathBoard(toMathBoard);
+				}
+				gameModel.currentGameSetIndex = index;
+
+				
+				if (gameModel.currentGameSetIndex == GameModel.Languages)
+				{
+					SLlangList.dataProvider = getSLLangueList(gameModel.currentLocale);
+					SLlangList.selectedIndex = 0;
+					MatchingCardFactory.instance.locale_SL = SLlangList.selectedItem.id as String;
+					bShowSLList = true;
+				}
+				else
+					bShowSLList = false;
+				
+				if (boardOnShow == mathBoard)
+				{
+					mathBoard.currentGame = gameModel.currentGame;
+					mathBoard.replayGame();
+				}
+				else
+				{
+					cardBoard.gameSetIndex = index;
+					cardBoard.currentGame = gameModel.currentGame;
+					cardBoard.replayGame();
+				}
+				
+				toolBar.titles = new DataProvider(gameModel.currentGameSet);
+			}
+			
+			protected function getSLLangueList(currentLocale:String):DataProvider
+			{
+				//get rid of the current locale one
+				var dp:DataProvider = new DataProvider(MainMenuModel.getInstnce().supportedLanguages);
+				for each (var lang:Object in dp.data)
+				{
+					if (lang.id == currentLocale)
+					{
+						dp.removeItem(lang);
+						break;
+					}
+				}
+				return dp;
+			}
+			
+			protected function SwitchMathBoard(toMathBoard:Boolean):void
+			{
+				if (mathBoard == null)
+				{
+					mathBoard = new MathQuizBoardContainer();
+					mathBoard.setSize(cardBoard.width, cardBoard.height);
+					addChild(mathBoard);
+					setChildIndex(mathBoard, zOrderIndex++);
+				}
+				
+				var xOrig:int = boardX;
+				var yOrig:int = boardy;
+				
+				if (toMathBoard)
+				{
+					//push mathBoard to view and hide old cardboard to be a buffer cardboard
+					Tweener.addTween(cardBoard, {x:this.width, y:yOrig, time:0.6, transition:"easeOutCubic", onComplete:handleCardBoardMoveOut});
+					Tweener.addTween(mathBoard, {x:xOrig, y:yOrig, time:0.6, delay:0.2, transition:"linear"});
+					
+					boardOnShow = mathBoard;
+				}
+				else
+				{
+					Tweener.addTween(mathBoard, {x:this.width, y:yOrig, time:0.6, transition:"easeOutCubic", onComplete:handleMathBoardMoveOut});
+					Tweener.addTween(cardBoard, {x:xOrig, y:yOrig, time:0.6, delay:0.2, transition:"linear"});
+					
+					boardOnShow = cardBoard;
+				}
+			}
+			
+			private function handleCardBoardMoveOut():void
+			{
+				cardBoard.setPosition(boardX, -cardBoard.height);
+			}
+			
+			private function handleMathBoardMoveOut():void
+			{
+				mathBoard.setPosition(boardX, -mathBoard.height-300);
+			}
+			
+			override protected function draw():void
+			{
+				if (this.width > this.height) 
+				{	//landscape view
+					if (gameSelectionList)
+					{
+						gameSelectionList.Layout = GameSelectionArea.VERTICALBAR;
+						
+						gameSelectionList.setPosition(0, ApplicationModel.TitleBarHeight);
+						gameSelectionList.setSize(GameSelectionArea.MenuButtonWidth, this.height - ApplicationModel.TitleBarHeight);
+					}
+
+					//cardBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+					boardX =  (this.width - ApplicationModel.boardWidth - 2*GameSelectionArea.MenuButtonWidth)/2 + GameSelectionArea.MenuButtonWidth;
+					boardy = (this.height - ApplicationModel.boardHeight - ApplicationModel.TitleBarHeight)/2 + ApplicationModel.TitleBarHeight;
+					
+					if (btnNext)
+						btnNext.setPosition(this.width-buttonSize, this.height-buttonSize);
+					
+					if (btnReplay)
+						btnReplay.setPosition(this.width-buttonSize, ApplicationModel.TitleBarHeight);
+					
+					if (SLlangList)
+						SLlangList.setPosition(this.width - SLlangList.width - 10, btnReplay.y + btnReplay.height + 20);
+				}
+				else
+				{//portrait view
+					if (gameSelectionList)
+					{
+						gameSelectionList.Layout = GameSelectionArea.HORIZONTALBAR;
+						
+						gameSelectionList.setPosition(0, this.height - ApplicationModel.TitleBarHeight - GameSelectionArea.MenuButtonHeight);
+						gameSelectionList.setSize(this.width, GameSelectionArea.MenuButtonHeight);
+					}
+					
+					//cardBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+					boardX =  (this.width - ApplicationModel.boardWidth)/2;
+					boardy = (this.height - ApplicationModel.boardHeight - ApplicationModel.TitleBarHeight - 2 * GameSelectionArea.MenuButtonHeight)/2
+						 + ApplicationModel.TitleBarHeight + GameSelectionArea.MenuButtonHeight;
+					
+					if (btnNext)
+						btnNext.setPosition(this.width-buttonSize, ApplicationModel.TitleBarHeight);
+					
+					if (btnReplay)
+						btnReplay.setPosition(0, ApplicationModel.TitleBarHeight);
+					
+					if (SLlangList)
+						SLlangList.setPosition(this.width/2 - 20, btnReplay.y + ApplicationModel.NavigationButtonSize);
+
+				}
+				if (nextCardBoard)
+				{
+					nextCardBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+					nextCardBoard.setPosition(boardX, -nextCardBoard.height);
+				}
+				if (cardBoard)
+				{
+					cardBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+					
+					if (boardOnShow == cardBoard)
+					{
+						cardBoard.setPosition(boardX, boardy);
+	
+						if (mathBoard)
+						{
+							mathBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+							mathBoard.setPosition(boardX, -mathBoard.height);
+						}
+					}
+					else if (mathBoard && boardOnShow == mathBoard)
+					{
+						mathBoard.setSize(ApplicationModel.boardWidth, ApplicationModel.boardHeight);
+						mathBoard.setPosition(boardX, boardy);
+						cardBoard.setPosition(boardX, -cardBoard.height);
+					}
+				}
+
+				super.draw();
+			}
+
+			protected function selectLangueHandler(event:Event):void
+			{
+				gameSelectionList.onLocaleChanged();
+				toolBar.titles = new DataProvider(gameModel.currentGameSet);
+				cardBoard.onLocaleChanged();
+				
+				invalidate();
+			}
+			
+			protected function selectTitleHandler(event:GenericEvent):void
+			{
+				gameModel.currentGameIndex = event.data as int;
+
+				var game:GameDescriptor = gameModel.getGame(event.data as int);
+				if (gameModel.currentGameSetIndex != GameModel.MathQuizs)
+				{
+					loadGameToBufferBoard(game);
+				}
+				else
+				{
+					mathBoard.playGame(game);
+				}
+			}
+			
+			protected function selectSLLangueHandler(event:Event):void
+			{
+				MatchingCardFactory.instance.locale_SL = SLlangList.selectedItem.id as String;
+				cardBoard.replayGame();
+			}
+
+		]]>
+	</fx:Script>
+	<!-- "0xE9E9E9" -->
+	<components:GradientBackground 
+		id="background" color="0x345d53"
+		containment="{Containment.BACKGROUND}"/>
+	
+	<listClasses:DropDown id="SLlangList" visible="{bShowSLList}"
+						  rowCount="{MainMenuModel.getInstnce().supportedLanguages.length}"
+						  rowHeight="{ApplicationModel.TitleBarHeight}" 
+						  height="{ApplicationModel.TitleBarHeight}" width="{ApplicationModel.LangListWidth}" 
+						  select="selectSLLangueHandler(event)"
+						  />
+
+	
+	<toolbar:ToolbarView id="toolBar" 
+						 containment="{Containment.DOCK_TOP}" 
+						 titleSelected="selectTitleHandler(event)"
+						 localeChanged="selectLangueHandler(event)"
+						 />
+
+	<matching:MatchingGameBoardContainer
+		id="cardBoard"
+		gameSetIndex="{this.gameSelected}"
+		containment="{Containment.CONTAINED}" />
+	
+</r:QContainer>

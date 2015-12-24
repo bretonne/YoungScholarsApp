@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<r:QContainer 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		xmlns:s="library://ns.adobe.com/flex/spark"
+		xmlns:r="http://ns.renaun.com/mxml/2010" 
+		xmlns:homeView="com.aVictorio.youngScholars.views.homeView.*"
+		xmlns:text="qnx.ui.text.*"
+		xmlns:buttons="qnx.ui.buttons.*"
+		xmlns:listClasses="qnx.ui.listClasses.*" 
+		xmlns:core="qnx.ui.core.*" 
+		xmlns:gameSelection="com.aVictorio.youngScholars.views.homeView.gameSelection.*" 
+		xmlns:components="com.aVictorio.youngScholars.views.components.*"
+		 flow="{ContainerFlow.VERTICAL}"
+		 containment="{Containment.CONTAINED}"
+		 complete="completeHandler(event)" xmlns:matching="com.aVictorio.youngScholars.views.games.matching.*">
+	<fx:Metadata>
+		[Event(name="gameSelected", type="com.dpLightFramework.framework.control.GenericEvent")]
+	</fx:Metadata>
+	<fx:Metadata>
+		[ResourceBundle("resource")]
+	</fx:Metadata>
+
+	<fx:Script>
+		<![CDATA[
+			import com.aVictorio.youngScholars.managers.IconManager;
+			import com.aVictorio.youngScholars.model.ApplicationModel;
+			import com.aVictorio.youngScholars.model.MainMenuModel;
+			import com.aVictorio.youngScholars.views.games.matching.phone.MatchingGameBoardView_phone;
+			import com.aVictorio.youngScholars.views.homeView.gameSelection.GameSelectionArea;
+			import com.aVictorio.youngScholars.views.homeView.gameSelection.LabelIconButton;
+			import com.dpLightFramework.framework.control.GenericEvent;
+			import com.renaun.qnx.ui.text.Label;
+			
+			import qnx.ui.core.ContainerFlow;
+			import qnx.ui.core.Containment;
+			import qnx.ui.core.SizeMode;
+			import qnx.ui.core.SizeUnit;
+			import qnx.ui.data.DataProvider;
+			import qnx.ui.events.ListEvent;
+			
+			[Bindable]
+			protected var menuModel:MainMenuModel = MainMenuModel.getInstnce();
+
+			protected var gameSelectionList:GameSelectionArea;
+			
+	
+			protected function completeHandler(event:Event):void
+			{
+				logoBtn.setIcon(new IconManager.Logo());
+				
+				gameSelectionList = new GameSelectionArea(GameSelectionArea.TILELIST, "0xFFF54C");
+				addChild(gameSelectionList);
+				this.setChildIndex(gameSelectionList, 1);
+				invalidate();
+			}
+
+			
+			override protected function draw():void
+			{
+				super.draw();
+
+				if (logoBtn)
+				{
+					logoBtn.setPosition(0, 0);
+					logoBtn.setSize(this.width - ApplicationModel.LangListWidth, ApplicationModel.TitleBarHeight);
+				}
+				if (langList)
+				{
+					langList.setPosition(this.width - ApplicationModel.LangListWidth, 0);
+					langList.setSize(ApplicationModel.LangListWidth, ApplicationModel.TitleBarHeight);
+				}
+				
+				if (gameSelectionList)
+				{
+					gameSelectionList.setPosition(0, ApplicationModel.TitleBarHeight);
+					gameSelectionList.setSize(this.width, this.height - 2*ApplicationModel.TitleBarHeight);
+					gameSelectionList.invalidate();
+				}
+			}
+		]]>
+	</fx:Script>
+
+	<!-- "0xE9E9E9" -->
+	<components:GradientBackground 
+		id="background" color="0x345d53"
+		containment="{Containment.BACKGROUND}"/>
+
+	<buttons:IconButton id="logoBtn" size="100" 
+						enabled="false" 
+						sizeUnit="{SizeUnit.PERCENT}" sizeMode="{SizeMode.FLOW}"
+						/>
+	<listClasses:DropDown id="langList" size="{ApplicationModel.LangListWidth}" sizeMode="{SizeMode.FLOW}"
+				sizeUnit="{SizeUnit.PIXELS}"
+				rowCount="{menuModel.supportedLanguages.length}"
+				rowHeight="{ApplicationModel.TitleBarHeight}" 
+				dataProvider="{new DataProvider(menuModel.supportedLanguages)}"
+						  />
+	
+</r:QContainer> 

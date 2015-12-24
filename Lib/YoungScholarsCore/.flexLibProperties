@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
+  <includeClasses>
+    <classEntry path="com.aVictorio.youngScholars.managers.AppLocaleManager"/>
+    <classEntry path="com.aVictorio.youngScholars.managers.ILocalable"/>
+    <classEntry path="com.aVictorio.youngScholars.managers.StylingFactory"/>
+    <classEntry path="com.aVictorio.youngScholars.model.GameModel"/>
+    <classEntry path="com.aVictorio.youngScholars.model.MatchingCardFactory"/>
+    <classEntry path="com.aVictorio.youngScholars.model.MathQuizsFactory"/>
+    <classEntry path="com.aVictorio.youngScholars.utils.GameUtils"/>
+    <classEntry path="com.aVictorio.youngScholars.vos.CardDataVO"/>
+    <classEntry path="com.aVictorio.youngScholars.vos.GameDescriptor"/>
+    <classEntry path="com.aVictorio.youngScholars.vos.MathQuestion"/>
+  </includeClasses>
+  <includeResources/>
+  <namespaceManifests/>
+</flexLibProperties>

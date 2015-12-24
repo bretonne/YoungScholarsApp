@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<quiz:MathQuizBoard xmlns:fx="http://ns.adobe.com/mxml/2009" 
+				xmlns:quiz="com.aVictorio.youngScholars.views.games.quiz.*"
+				flow="{ContainerFlow.VERTICAL}" 
+				padding="5" 
+				xmlns:text="com.renaun.qnx.ui.text.*" 
+				xmlns:ns="http://ns.renaun.com/mxml/2010" 
+				xmlns:renderers="com.aVictorio.youngScholars.views.games.matching.renderers.*" 
+				xmlns:buttons="qnx.ui.buttons.*" 
+				complete="completeHandler(event)"
+				>
+	<fx:Script>
+		<![CDATA[
+			import caurina.transitions.Tweener;
+			
+			import com.aVictorio.youngScholars.managers.IconManager;
+			import com.aVictorio.youngScholars.managers.StylingFactory;
+			import com.aVictorio.youngScholars.model.ApplicationModel;
+			import com.aVictorio.youngScholars.vos.GameDescriptor;
+			
+			import mx.core.UIComponent;
+			
+			import qnx.ui.core.ContainerFlow;
+			import qnx.ui.core.Containment;
+			import qnx.ui.core.SizeMode;
+			import qnx.ui.core.SizeUnit;
+			import qnx.ui.skins.buttons.RadioButtonSkinBlack;
+			import qnx.ui.skins.buttons.RadioButtonSkinWhite;
+			
+			override protected function onAdded():void
+			{
+				op1Label.setSize(100, 60);
+				op2Label.setSize(100, 60);
+				operatorLabel.setSize(100, 60);
+				
+				var textFormat:TextFormat = 
+					StylingFactory.getTextFormat(50, "0xffffff", true);
+				textFormat.align ="right";
+				
+				op1Label.format = textFormat;
+				op2Label.format = textFormat;
+				operatorLabel.format = textFormat;
+				
+				textFormat = StylingFactory.getTextFormat(24, "0", true);
+				correctLabel.format = textFormat;
+				correctLabel.setSize(50, 30);
+				wrongLabel.format = textFormat;
+				wrongLabel.setSize(50, 30);
+				
+				answer1.setSkin(RadioButtonSkinBlack);
+				answer2.setSkin(RadioButtonSkinBlack);
+				answer3.setSkin(RadioButtonSkinBlack);
+				answer4.setSkin(RadioButtonSkinBlack);
+				
+				crossIcon.setImage(new IconManager.CrossIcon());
+				crossIcon.setSize(32, 32);
+				checkIcon.setImage(new IconManager.CheckIcon());
+				checkIcon.setSize(32, 32);
+			}
+			
+			protected function completeHandler(event:Event):void
+			{
+				addEventListener("gameOver", onGameOver, false, 0, true);
+				addEventListener("nextQuestion", onNextQuestion, false, 0, true);
+			}
+			
+			override protected function draw():void
+			{
+				super.draw();
+				
+				reportContainer.setPosition(0, 0);
+				
+				op1Label.setPosition(this.width - 150, 60);
+				op2Label.setPosition(op1Label.x, op1Label.y + 50);
+				operatorLabel.setPosition(30, op2Label.y);
+				
+				answerContainer.setPosition(operatorLabel.x - 10, operatorLabel.y + 70);
+				
+				graphics.lineStyle(4, 0);
+				graphics.moveTo(100, op2Label.y + 60);
+				graphics.lineTo(this.width-10, op2Label.y+60);
+			}
+			
+			protected function onGameOver(event:Event):void
+			{
+				var extraSpace:int = 100;  //make sure they move out of sight.  simulator view was having problem.  alpha=0 not working well there
+				Tweener.addTween(op1Label, {x:op1Label.x, y:this.height+extraSpace, alpha:0, time:1, transition:"linear"});
+				Tweener.addTween(op2Label, {x:op2Label.x, y:this.height+extraSpace, alpha:0, time:1, transition:"linear"});
+				Tweener.addTween(operatorLabel, {x:operatorLabel.x, y:this.height+extraSpace, alpha:0, time:1, transition:"linear"});
+				
+				Tweener.addTween(answerContainer, {x:answerContainer.x, y:this.height+extraSpace, alpha:0, time:1, transition:"linear"});
+	
+				Tweener.addTween(reportContainer, {x:150, y:this.height/2, alpha:1, time:1, transition:"linear"});
+			}
+			
+			protected function onNextQuestion(event:Event):void
+			{
+				//toggle the answer button back
+				answer1.selected = false;
+				answer2.selected = false;
+				answer3.selected = false;
+				answer4.selected = false;
+			}
+			
+			public function replayGame():void
+			{
+				onNextQuestion(null);
+				numOfCorrectAnswers=0;
+				numOfWrongAnswers=0;
+				loadQuestion(true);
+				
+				op1Label.alpha = 1;
+				op2Label.alpha=1;
+				operatorLabel.alpha = 1;
+				answerContainer.alpha = 1;
+
+				invalidate();
+			}
+			
+			public function playGame(game:GameDescriptor):void
+			{
+				currentGame = game;
+				replayGame();
+			}
+			
+		]]>
+	</fx:Script>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<ns:QContainer id="reportContainer" padding="10"
+				   size="40" sizeUnit="{SizeUnit.PIXELS}" sizeMode="{SizeMode.FLOW}" 
+					flow="{ContainerFlow.HORIZONTAL}" >
+		<ns:Image id="checkIcon" width="32" height="32"/>
+		<text:Label id="correctLabel" width="50" height="30"
+					text="{this.numOfCorrectAnswers}" />
+		<ns:Image id="crossIcon" width="32" height="32"/>
+		<text:Label id="wrongLabel" width="50" height="30"
+					text="{this.numOfWrongAnswers}" />
+	</ns:QContainer>
+		
+	<text:Label id="op1Label" text="{question.operator1}" />
+	<text:Label id="operatorLabel" text="{question.operation}" />
+	<text:Label id="op2Label" text="{question.operator2}" />
+	
+	<ns:QContainer id="answerContainer"
+		flow="{ContainerFlow.VERTICAL}"
+				   padding="10" >
+		
+		<buttons:RadioButton id="answer1"
+			label="{question.answers[0]}"  
+			width="{ApplicationModel.cardBoardColumnwidth}"
+			height="40"
+			click="onAnswerClicked(0);"
+			/> 
+		
+		<buttons:RadioButton id="answer2"
+							 label="{question.answers[1]}" 
+							 width="{ApplicationModel.cardBoardColumnwidth}"
+							 height="40"
+							 click="onAnswerClicked(1);"
+							/> 
+	 
+		<buttons:RadioButton id="answer3"
+							 label="{question.answers[2]}" 
+							 width="{ApplicationModel.cardBoardColumnwidth}"
+							 height="40"
+							 click="onAnswerClicked(2);"
+							 /> 
+	 
+		<buttons:RadioButton id="answer4"
+							 label="{question.answers[3]}" 
+							 width="{ApplicationModel.cardBoardColumnwidth}"
+							 height="40"
+							 click="onAnswerClicked(3);"
+							 /> 
+
+	</ns:QContainer>
+
+</quiz:MathQuizBoard>
